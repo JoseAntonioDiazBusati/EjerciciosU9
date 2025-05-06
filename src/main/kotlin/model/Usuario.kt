@@ -1,11 +1,12 @@
 package org.example.model
 
-data class Usuario(val id: Int, val nombre: String, val email: String)
-/**
-fun getConnection(): Connection =
-    DriverManager.getConnection("jdbc:h2:~/H2", "user", "user")
+import org.example.data.DataSource.getConnection
 
-fun initDatabase() {
+
+data class Usuario(val id: Int, val nombre: String, val email: String)
+
+
+fun initDatabaseUsuario() {
     getConnection().use { conn ->
         val stmt = conn.createStatement()
         stmt.executeUpdate(
@@ -19,16 +20,16 @@ fun initDatabase() {
     }
 }
 
-fun createUser(name: String, email: String) {
+fun createUsuario(nombre: String, email: String) {
     getConnection().use { conn ->
         val stmt = conn.prepareStatement("INSERT INTO Usuario (nombre, email) VALUES (?, ?)")
-        stmt.setString(1, name)
+        stmt.setString(1, nombre)
         stmt.setString(2, email)
         stmt.executeUpdate()
     }
 }
 
-fun readUsers(): List<Usuario> {
+fun readUsuario(): List<Usuario> {
     val users = mutableListOf<Usuario>()
     getConnection().use { conn ->
         val stmt = conn.createStatement()
@@ -40,9 +41,9 @@ fun readUsers(): List<Usuario> {
     return users
 }
 
-fun updateUser(id: Int, nombre: String, email: String) {
+fun updateUsuario(id: Int, nombre: String, email: String) {
     getConnection().use { conn ->
-        val stmt = conn.prepareStatement("UPDATE users SET nombre = ?, email = ? WHERE id = ?")
+        val stmt = conn.prepareStatement("UPDATE Usuario SET nombre = ?, email = ? WHERE id = ?")
         stmt.setString(1, nombre)
         stmt.setString(2, email)
         stmt.setInt(3, id)
@@ -50,11 +51,10 @@ fun updateUser(id: Int, nombre: String, email: String) {
     }
 }
 
-fun deleteUser(id: Int) {
+fun deleteUsuario(id: Int) {
     getConnection().use { conn ->
-        val stmt = conn.prepareStatement("DELETE FROM users WHERE id = ?")
+        val stmt = conn.prepareStatement("DELETE FROM Usuario WHERE id = ?")
         stmt.setInt(1, id)
         stmt.executeUpdate()
     }
 }
-*/
