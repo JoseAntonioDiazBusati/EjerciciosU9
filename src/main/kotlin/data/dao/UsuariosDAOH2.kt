@@ -2,10 +2,7 @@ package org.example.data.dao
 
 import org.example.data.db.Database
 import org.example.model.Usuario
-import java.sql.Connection
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.Statement
+import java.sql.*
 
 class UsuariosDAOH2: IUsuariosDAO {
     override fun getAll(): List<Usuario> {
@@ -21,7 +18,9 @@ class UsuariosDAOH2: IUsuariosDAO {
                 rs = stmt.executeQuery(sql)
                 while (rs.next()) {
                     val id = rs.getInt("id")
-                    usuarios.add(Usuario(id, ))
+                    val nombre = rs.getString("nombre")
+                    val email = rs.getString("email")
+                    usuarios.add(Usuario(id, nombre, email))
                 }
             }
         } catch (e: SQLException) {
@@ -33,7 +32,7 @@ class UsuariosDAOH2: IUsuariosDAO {
             stmt?.close()
             conn?.close()
         }
-
+        return usuarios
     }
 
     override fun insert(usuario: Usuario) {
