@@ -7,7 +7,6 @@ fun main() {
         val contrasenia = "user"
 
         try {
-            Class.forName("org.h2.Driver")
             val conexion = DriverManager.getConnection(url, usuario, contrasenia)
             println("Conexión exitosa")
             conexion.close()
