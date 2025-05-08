@@ -2,11 +2,11 @@ package org.example.ui
 
 class Consola: IConsola {
 
-    override fun mostrarMSJ(mensaje: String) {
+    override fun mostrarMsj(mensaje: String) {
         println(mensaje)
     }
 
-    override fun mostrarError(Error: String) {
-        println(Error)
+    override fun mostrarError(error: String) {
+        println(error)
     }
 }
