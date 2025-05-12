@@ -7,4 +7,5 @@ interface IUsuarioService {
     fun insert(usuario: Usuario)
     fun update(usuario: Usuario)
     fun delete(id: Int)
+    fun obtenerPorId(id: Int): List<Usuario>
 }

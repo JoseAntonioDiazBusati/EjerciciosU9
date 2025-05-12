@@ -18,10 +18,9 @@ class UsuariosDAOH2: IUsuariosDAO {
                 val sql = "SELECT * FROM Usuario"
                 rs = stmt.executeQuery(sql)
                 while (rs.next()) {
-                    val id = rs.getInt("id")
                     val nombre = rs.getString("nombre")
                     val email = rs.getString("email")
-                    usuarios.add(Usuario(id, nombre, email))
+                    usuarios.add(Usuario(nombre, email))
                 }
             }
         } catch (e: SQLException) {
@@ -37,54 +36,66 @@ class UsuariosDAOH2: IUsuariosDAO {
     }
 
     override fun insert(usuario: Usuario) {
-        val usuarios = mutableListOf<Usuario>()
         var conn: Connection? = null
-        var stmt: Statement? = null
-        var rs: ResultSet? = null
+        var stmt: PreparedStatement? = null
+
         try {
             conn = Database.getConnection()
-            if (conn != null) {
-                stmt = conn.createStatement()
-                val sql = "INSERT INTO Usuario"
-                rs = stmt.executeQuery(sql)
-                usuarios.add(usuario)
-            }
+            stmt = conn?.prepareStatement("INSERT INTO USUARIO (nombre, email) VALUES (?,?)")
+            stmt?.setString(1, usuario.nombre)
+            stmt?.setString(2, usuario.email)
+            stmt?.executeUpdate()
         } catch (e: SQLException) {
-            Consola().mostrarError("Error al insertar la tabla.")
+            Consola().mostrarError("Error al insertar en la tabla.")
         } catch (e: Exception) {
             Consola().mostrarError("Error al ejecutar.")
         } finally {
-            rs?.close()
             stmt?.close()
             conn?.close()
         }
     }
 
     override fun update(usuario: Usuario) {
-        val usuarios = mutableListOf<Usuario>()
         var conn: Connection? = null
-        var stmt: Statement? = null
-        var rs: ResultSet? = null
+        var stmt: PreparedStatement? = null
         try {
             conn = Database.getConnection()
-            if (conn != null) {
-                stmt = conn.createStatement()
-                val sql = "INSERT usuario INTO Usuario"
-                rs = stmt.executeQuery(sql)
-                usuarios.add(usuario)
+            if(conn != null){
+                stmt = conn.prepareStatement("UPDATE Usuario SET nombre = ? WHERE id = ?")
+                stmt.setString(1, usuario.nombre)
+                stmt.setString(2, usuario.email)
+                stmt.executeUpdate()
             }
         } catch (e: SQLException) {
             Consola().mostrarError("Error al actualizar la tabla.")
         } catch (e: Exception) {
             Consola().mostrarError("Error al ejecutar.")
         } finally {
-            rs?.close()
             stmt?.close()
             conn?.close()
         }
     }
 
     override fun delete(id: Int) {
+        var conn: Connection? = null
+        var stmt: PreparedStatement? = null
+        try {
+            conn = Database.getConnection()
+            if (conn != null){
+                stmt = conn.prepareStatement("DELETE FROM Usuario WHERE id = ?")
+                stmt.setInt(1, id)
+                stmt.executeUpdate()
+            }
+        } catch (e: SQLException) {
+            Consola().mostrarError("Error al borrar el usuario.")
+        } catch (e: Exception) {
+            Consola().mostrarError("Error al ejecutar.")
+        } finally {
+            stmt?.close()
+            conn?.close()
+        }
+    }
+    override fun obtenerPorId(id: Int): List<Usuario> {
         val usuarios = mutableListOf<Usuario>()
         var conn: Connection? = null
         var stmt: Statement? = null
@@ -93,17 +104,23 @@ class UsuariosDAOH2: IUsuariosDAO {
             conn = Database.getConnection()
             if (conn != null) {
                 stmt = conn.createStatement()
-                val sql = "DELETE FROM Usuario WHERE id = ?"
+                val sql = "SELECT * FROM Usuario WHERE id = $id"
                 rs = stmt.executeQuery(sql)
+                while (rs.next()) {
+                    val nombre = rs.getString("nombre")
+                    val email = rs.getString("email")
+                    usuarios.add(Usuario(nombre, email))
+                }
             }
         } catch (e: SQLException) {
-            Consola().mostrarError("Error al borrar el usuario.")
+                Consola().mostrarError("Error al mostrar la tabla.")
         } catch (e: Exception) {
-            Consola().mostrarError("Error al ejecutar.")
+                Consola().mostrarError("Error al ejecutar.")
         } finally {
             rs?.close()
             stmt?.close()
             conn?.close()
         }
+        return usuarios
     }
 }

@@ -25,4 +25,8 @@ class UsuarioService(private val usuarioDao: IUsuariosDAO): IUsuarioService {
         //...
         usuarioDao.delete(id)
     }
+
+    override fun obtenerPorId(id: Int): List<Usuario> {
+        return usuarioDao.obtenerPorId(id)
+    }
 }
