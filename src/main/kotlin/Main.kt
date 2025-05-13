@@ -6,18 +6,16 @@ import org.example.service.UsuarioService
 
 fun main() {
 
-    Database.getConnection()
-
     val usuario1 = Usuario( "Facundo Pérez",  "facuper@mail.com")
     val usuario2 = Usuario( "Ataulfo Rodríguez",  "ataurod@mail.com")
     val usuario3 = Usuario( "Cornelio Ramírez",  "Cornram@mail.com")
 
-    val dao = UsuariosDAOH2()
-    val servicio = UsuarioService(dao)
+    val usuariodao = UsuariosDAOH2()
+    val usuarioservicio = UsuarioService(usuariodao)
 
-    servicio.insert(usuario1)
-    servicio.insert(usuario2)
-    servicio.insert(usuario3)
-    println(servicio.getAll())
+    usuarioservicio.insert(usuario1)
+    usuarioservicio.insert(usuario2)
+    usuarioservicio.insert(usuario3)
+    println(usuarioservicio.getAll())
 
 }

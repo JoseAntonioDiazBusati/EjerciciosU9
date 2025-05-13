@@ -1,13 +1,14 @@
-package org.example.data.dao
+package org.example.datos.dao
+
 
 import org.example.data.db.Database
-import org.example.model.Usuario
+import org.example.model.Pedido
 import java.sql.*
 import org.example.ui.Consola
 
-class UsuariosDAOH2: IUsuariosDAO {
-    override fun getAll(): List<Usuario> {
-        val usuarios = mutableListOf<Usuario>()
+class PedidoDAO: IPedidoDAO {
+    override fun getAll(): List<Pedido> {
+        val pedidos = mutableListOf<Pedido>()
         var conn: Connection? = null
         var stmt: Statement? = null
         var rs: ResultSet? = null
@@ -15,12 +16,12 @@ class UsuariosDAOH2: IUsuariosDAO {
             conn = Database.getConnection()
             if (conn != null) {
                 stmt = conn.createStatement()
-                val sql = "SELECT * FROM Usuario"
+                val sql = "SELECT * FROM PEDIDO"
                 rs = stmt.executeQuery(sql)
                 while (rs.next()) {
-                    val nombre = rs.getString("nombre")
-                    val email = rs.getString("email")
-                    usuarios.add(Usuario(nombre, email))
+                    val precioTotal = rs.getDouble("precio total")
+                    val idUsuario = rs.getInt("id usuario")
+                    pedidos.add(Pedido(precioTotal, idUsuario))
                 }
             }
         } catch (e: SQLException) {
@@ -32,18 +33,18 @@ class UsuariosDAOH2: IUsuariosDAO {
             stmt?.close()
             conn?.close()
         }
-        return usuarios
+        return pedidos
     }
 
-    override fun insert(usuario: Usuario) {
+    override fun insert(pedido: Pedido) {
         var conn: Connection? = null
         var stmt: PreparedStatement? = null
 
         try {
             conn = Database.getConnection()
-            stmt = conn?.prepareStatement("INSERT INTO USUARIO (nombre, email) VALUES (?,?)")
-            stmt?.setString(1, usuario.nombre)
-            stmt?.setString(2, usuario.email)
+            stmt = conn?.prepareStatement("INSERT INTO PEDIDO (precioTotal, idUsuario) VALUES (?,?)")
+            stmt?.setDouble(1, pedido.precioTotal)
+            stmt?.setInt(2, pedido.idUsuario)
             stmt?.executeUpdate()
         } catch (e: SQLException) {
             Consola().mostrarError("Error al insertar en la tabla.")
@@ -55,15 +56,15 @@ class UsuariosDAOH2: IUsuariosDAO {
         }
     }
 
-    override fun update(usuario: Usuario) {
+    override fun update(pedido: Pedido) {
         var conn: Connection? = null
         var stmt: PreparedStatement? = null
         try {
             conn = Database.getConnection()
             if(conn != null){
-                stmt = conn.prepareStatement("UPDATE Usuario SET nombre = ? WHERE id = ?")
-                stmt.setString(1, usuario.nombre)
-                stmt.setString(2, usuario.email)
+                stmt = conn.prepareStatement("UPDATE PEDIDO SET precioTotal = ? WHERE id = ?")
+                stmt.setDouble(1, pedido.precioTotal)
+                stmt.setInt(2, pedido.idUsuario)
                 stmt.executeUpdate()
             }
         } catch (e: SQLException) {
@@ -82,7 +83,7 @@ class UsuariosDAOH2: IUsuariosDAO {
         try {
             conn = Database.getConnection()
             if (conn != null){
-                stmt = conn.prepareStatement("DELETE FROM Usuario WHERE id = ?")
+                stmt = conn.prepareStatement("DELETE FROM PEDIDO WHERE id = ?")
                 stmt.setInt(1, id)
                 stmt.executeUpdate()
             }
@@ -95,8 +96,8 @@ class UsuariosDAOH2: IUsuariosDAO {
             conn?.close()
         }
     }
-    override fun obtenerPorId(id: Int): List<Usuario> {
-        val usuarios = mutableListOf<Usuario>()
+    override fun obtenerPorId(id: Int): List<Pedido> {
+        val pedidos = mutableListOf<Pedido>()
         var conn: Connection? = null
         var stmt: Statement? = null
         var rs: ResultSet? = null
@@ -104,23 +105,23 @@ class UsuariosDAOH2: IUsuariosDAO {
             conn = Database.getConnection()
             if (conn != null) {
                 stmt = conn.createStatement()
-                val sql = "SELECT * FROM USUARIO WHERE id = $id"
+                val sql = "SELECT * FROM PEDIDO WHERE id = $id"
                 rs = stmt.executeQuery(sql)
                 while (rs.next()) {
-                    val nombre = rs.getString("nombre")
-                    val email = rs.getString("email")
-                    usuarios.add(Usuario(nombre, email))
+                    val precioTotal = rs.getDouble("precio total")
+                    val idUsuario = rs.getInt("id Usuario")
+                    pedidos.add(Pedido(precioTotal, idUsuario))
                 }
             }
         } catch (e: SQLException) {
-                Consola().mostrarError("Error al mostrar la tabla.")
+            Consola().mostrarError("Error al mostrar la tabla.")
         } catch (e: Exception) {
-                Consola().mostrarError("Error al ejecutar.")
+            Consola().mostrarError("Error al ejecutar.")
         } finally {
             rs?.close()
             stmt?.close()
             conn?.close()
         }
-        return usuarios
+        return pedidos
     }
 }

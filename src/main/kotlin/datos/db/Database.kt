@@ -4,9 +4,9 @@ package org.example.data.db
 import java.sql.*
 
 object Database {
-    private const val URL = "jdbc:h2:./data/tiendadb"
+    private const val URL = "jdbc:h2:~/data/tiendadb"
     private const val USERNAME = "sa"
-    private const val PASSWORD = ""
+    private const val PASSWORD = "sa"
 
     fun getConnection(): Connection? {
         return try {
