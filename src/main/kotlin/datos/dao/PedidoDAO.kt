@@ -105,7 +105,7 @@ class PedidoDAO: IPedidoDAO {
             conn = Database.getConnection()
             if (conn != null) {
                 stmt = conn.createStatement()
-                val sql = "SELECT * FROM PEDIDO WHERE id = $id"
+                val sql = "SELECT * FROM PEDIDO WHERE id = ?"
                 rs = stmt.executeQuery(sql)
                 while (rs.next()) {
                     val precioTotal = rs.getDouble("precio total")

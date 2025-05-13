@@ -1,13 +1,13 @@
-package org.example.data.dao
+package org.example.datos.dao
 
 import org.example.data.db.Database
-import org.example.model.Usuario
-import java.sql.*
+import org.example.model.Producto
 import org.example.ui.Consola
+import java.sql.*
 
-class UsuariosDAOH2: IUsuariosDAO {
-    override fun getAll(): List<Usuario> {
-        val usuarios = mutableListOf<Usuario>()
+class ProductoDAO: IProductoDAO {
+    override fun getAll(): List<Producto> {
+        val productos = mutableListOf<Producto>()
         var conn: Connection? = null
         var stmt: Statement? = null
         var rs: ResultSet? = null
@@ -15,12 +15,13 @@ class UsuariosDAOH2: IUsuariosDAO {
             conn = Database.getConnection()
             if (conn != null) {
                 stmt = conn.createStatement()
-                val sql = "SELECT * FROM USUARIO"
+                val sql = "SELECT * FROM PRODUCTO"
                 rs = stmt.executeQuery(sql)
                 while (rs.next()) {
                     val nombre = rs.getString("nombre")
-                    val email = rs.getString("email")
-                    usuarios.add(Usuario(nombre, email))
+                    val precio = rs.getDouble("precio")
+                    val stock = rs.getInt("stock")
+                    productos.add(Producto(nombre, precio, stock))
                 }
             }
         } catch (e: SQLException) {
@@ -32,21 +33,24 @@ class UsuariosDAOH2: IUsuariosDAO {
             stmt?.close()
             conn?.close()
         }
-        return usuarios
+        return productos
     }
 
-    override fun insert(usuario: Usuario) {
+    override fun insert(producto: Producto) {
         var conn: Connection? = null
         var stmt: PreparedStatement? = null
 
         try {
             conn = Database.getConnection()
-            stmt = conn?.prepareStatement("INSERT INTO USUARIO (nombre, email) VALUES (?,?)")
-            stmt?.setString(1, usuario.nombre)
-            stmt?.setString(2, usuario.email)
-            stmt?.executeUpdate()
+            if (conn != null){
+                stmt = conn.prepareStatement("INSERT INTO PRODUCTO (nombre, precio, stock) VALUES (?,?,?)")
+                stmt.setString(1, producto.nombre)
+                stmt.setDouble(2, producto.precio)
+                stmt.setInt(3, producto.stock)
+                stmt.executeUpdate()
+            }
         } catch (e: SQLException) {
-            Consola().mostrarError("Error al insertar en la tabla.")
+            Consola().mostrarError("Error al insertar producto.")
         } catch (e: Exception) {
             Consola().mostrarError("Error al ejecutar.")
         } finally {
@@ -55,15 +59,17 @@ class UsuariosDAOH2: IUsuariosDAO {
         }
     }
 
-    override fun update(usuario: Usuario) {
+    override fun update(producto: Producto) {
         var conn: Connection? = null
         var stmt: PreparedStatement? = null
+
         try {
             conn = Database.getConnection()
-            if(conn != null){
-                stmt = conn.prepareStatement("UPDATE USUARIO SET nombre = ? WHERE id = ?")
-                stmt.setString(1, usuario.nombre)
-                stmt.setString(2, usuario.email)
+            if (conn != null){
+                stmt = conn.prepareStatement("UPDATE PRODUCTO SET nombre = ?, precio = ?, stock = ? WHERE id = ?")
+                stmt.setString(1, producto.nombre)
+                stmt.setDouble(2, producto.precio)
+                stmt.setInt(3, producto.stock)
                 stmt.executeUpdate()
             }
         } catch (e: SQLException) {
@@ -79,15 +85,16 @@ class UsuariosDAOH2: IUsuariosDAO {
     override fun delete(id: Int) {
         var conn: Connection? = null
         var stmt: PreparedStatement? = null
+
         try {
             conn = Database.getConnection()
             if (conn != null){
-                stmt = conn.prepareStatement("DELETE FROM USUARIO WHERE id = ?")
-                stmt.setInt(1, id)
-                stmt.executeUpdate()
+                stmt = conn.prepareStatement("DELETE FROM PRODUCTO WHERE id = ?")
+                stmt.setInt(1,id)
+                stmt?.executeUpdate()
             }
-        } catch (e: SQLException) {
-            Consola().mostrarError("Error al borrar el usuario.")
+        }catch (e: SQLException) {
+            Consola().mostrarError("Error al borrar el producto.")
         } catch (e: Exception) {
             Consola().mostrarError("Error al ejecutar.")
         } finally {
@@ -95,8 +102,9 @@ class UsuariosDAOH2: IUsuariosDAO {
             conn?.close()
         }
     }
-    override fun obtenerPorId(id: Int): List<Usuario> {
-        val usuarios = mutableListOf<Usuario>()
+
+    override fun obtenerPorId(id: Int): List<Producto> {
+        val productos = mutableListOf<Producto>()
         var conn: Connection? = null
         var stmt: Statement? = null
         var rs: ResultSet? = null
@@ -104,23 +112,24 @@ class UsuariosDAOH2: IUsuariosDAO {
             conn = Database.getConnection()
             if (conn != null) {
                 stmt = conn.createStatement()
-                val sql = "SELECT * FROM USUARIO WHERE id = ?"
+                val sql = "SELECT * FROM PRODUCTO WHERE id = ?"
                 rs = stmt.executeQuery(sql)
                 while (rs.next()) {
                     val nombre = rs.getString("nombre")
-                    val email = rs.getString("email")
-                    usuarios.add(Usuario(nombre, email))
+                    val precio = rs.getDouble("precio")
+                    val stock = rs.getInt("stock")
+                    productos.add(Producto(nombre, precio, stock))
                 }
             }
         } catch (e: SQLException) {
-                Consola().mostrarError("Error al mostrar la tabla.")
+            Consola().mostrarError("Error al mostrar la tabla.")
         } catch (e: Exception) {
-                Consola().mostrarError("Error al ejecutar.")
+            Consola().mostrarError("Error al ejecutar.")
         } finally {
             rs?.close()
             stmt?.close()
             conn?.close()
         }
-        return usuarios
+        return productos
     }
 }
